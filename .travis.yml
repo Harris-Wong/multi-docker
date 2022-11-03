@@ -1,0 +1,15 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t harriswong/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run harriswong/react-test npm test -- --coverage
+
+after_success:
+  - docker build -t harriswong/multi-client ./client
+  - docker build -t harriswong/multi-nginx ./nginx
+  - docker build -t harriswong/multi-server ./server
+  - docker build -t harriswong/multi-worker ./worker
