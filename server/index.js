@@ -6,7 +6,8 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const app = express();
-app.use(cors());
+// cors (Cross-Origin Resource Sharing) https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+app.use(cors());    // allow transfers between browsers and servers with different ports
 app.use(bodyParser.json());
 
 // Postgres Client Setup
@@ -21,7 +22,7 @@ const pgClient = new Pool({
 
 pgClient.on("connect", (client) => {
   client
-    .query("CREATE TABLE IF NOT EXISTS values (number INT)")
+    .query("CREATE TABLE IF NOT EXISTS values (number INT)")  // table: values; column: number
     .catch((err) => console.error(err));
 });
 
@@ -30,7 +31,7 @@ const redis = require("redis");
 const redisClient = redis.createClient({
   host: keys.redisHost,
   port: keys.redisPort,
-  retry_strategy: () => 1000,
+  retry_strategy: () => 1000, // retry every 1 second if server's down
 });
 const redisPublisher = redisClient.duplicate();
 
@@ -43,7 +44,7 @@ app.get("/", (req, res) => {
 app.get("/values/all", async (req, res) => {
   const values = await pgClient.query("SELECT * from values");
 
-  res.send(values.rows);
+  res.send(values.rows);  // return from query can include more than table rows, so need to specify
 });
 
 app.get("/values/current", async (req, res) => {
